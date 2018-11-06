@@ -40,7 +40,7 @@ HtmlHelper::registerCssAndScriptsFiles($cssAnsScriptFilesModule, Yii::app()->get
 
 </style>
 
-<div id="mapid" style="z-index: 1; width: 100%; height: 600px;"></div>
+<div id="mapContainer" style="z-index: 1; width: 100%; height: 600px;"></div>
 <div style="">
 	<nav class="header-map index2">
 	    <div class="container">
@@ -94,7 +94,8 @@ HtmlHelper::registerCssAndScriptsFiles($cssAnsScriptFilesModule, Yii::app()->get
 <script type="text/javascript">	
 
 jQuery(document).ready(function() {
-	mapObject.init();
+
+	mapObj.init();
 	$("body").addClass("inSig");
 	$.ajax({
 		type: "POST",
@@ -103,19 +104,8 @@ jQuery(document).ready(function() {
 		success: function(data){
 			console.log("HERE", data);
 
+			mapObj.addElts(data.entities, false);
 
-			$.each(data.entities, function(k,v){
-				mapObject.addMarker(v);
-
-			});
-
-			if(mapObject.arrayBounds.length > 0){
-				mapObject.bounds = L.bounds(mapObject.arrayBounds);
-				var point = mapObject.bounds.getCenter()
-				mapObject.map.panTo([point.x, point.y]);
-			}
-
-			//mapObject.map.addLayer(mapObject.markersCluster);
 		}
 	});
 

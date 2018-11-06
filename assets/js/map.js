@@ -1,26 +1,34 @@
-var mapObject = {
-	container : 'mapid',
+var mapObj = {
+	container : 'mapContainer',
 	map : null,
 	arrayBounds : [],
 	bounds : null,
 	markersCluster : null,
+	markerList : [],
 	custom : {
 		citoyen : {
 			img : assetPath+'/images/markers/citoyen_A.svg',
 		}
 	},
-	init : function(idMap = 'mapid'){
+	init : function(pInit = null){
 
 		//Init variable
-		mapObject.container =  idMap;
-		mapObject.arrayBounds =  [];
-		mapObject.bounds =  null;
-		//creation de la carte 
-		mapObject.map = L.map(mapObject.container).setView([51.508, -0.11], 12);
-		// création tpl
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(mapObject.map);
+		mapObj.container =  ( (pInit != null && typeof pInit.container != "undefined") ? pInit.container : "mapContainer" );
+		mapObj.arrayBounds =  [];
+		mapObj.bounds =  null;
+		mapObj.markersCluster =  null;
+		mapObj.markerList =  [];
+		
 
-		mapObject.markersCluster = new L.markerClusterGroup({
+
+		var latLon = ( (pInit != null && typeof pInit.latLon != "undefined") ? pInit.latLon : [0, 0] );
+		var zoom = ( (pInit != null && typeof pInit.zoom != "undefined") ? pInit.zoom : 10 );
+		//creation de la carte 
+		mapObj.map = L.map(mapObj.container).setView(latLon, zoom);
+		// création tpl
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(mapObj.map);
+
+		mapObj.markersCluster = new L.markerClusterGroup({
 			iconCreateFunction: function(cluster) {
 
 				var childCount = cluster.getChildCount();
@@ -39,9 +47,34 @@ var mapObject = {
 		});
 
 	},
-	addMarker : function(elt){
+	addElts : function (data, cluster = true){
+		$.each(data, function(k,v){
+			mapObj.addMarker(v, cluster);
+		});
+
+		if(mapObj.arrayBounds.length > 0){
+			mapObj.bounds = L.bounds(mapObj.arrayBounds);
+			var point = mapObj.bounds.getCenter()
+			mapObj.map.panTo([point.x, point.y]);
+		}
+
+		if(cluster=== true)
+			mapObj.map.addLayer(mapObj.markersCluster);
+	},
+	clearMap : function(){
+
+		// Supprime les markers
+		$.each(mapObj.markerList, function(){
+			console.log("removeLayer", this);
+			mapObj.map.removeLayer(this);
+		});
+		mapObj.markerList = [];
+		if(mapObj.markersCluster != null)
+			mapObj.markersCluster.clearLayers();
+	},
+	addMarker : function(elt, cluster = true){
 		var myIcon = L.icon({
-			iconUrl: mapObject.custom.citoyen.img,
+			iconUrl: mapCustom.markers.default,
 			iconSize: [38, 95],
 			iconAnchor: [22, 94],
 			popupAnchor: [-3, -76],
@@ -50,22 +83,26 @@ var mapObject = {
 			shadowAnchor: [22, 94]
 		});
 		var latLon = [ elt.geo.latitude, elt.geo.longitude ] ;
-		var marker = L.marker(latLon, {icon: myIcon}).addTo(mapObject.map);
-		//var marker = L.marker(latLon, {icon: myIcon});
-		mapObject.addPopUp(marker);
-		mapObject.arrayBounds.push(latLon);
-		mapObject.markersCluster.addLayer(marker);
+		var marker = L.marker(latLon, {icon: myIcon});
+		mapObj.markerList.push(marker);
+		mapObj.addPopUp(marker);
+		mapObj.arrayBounds.push(latLon);
+		if(cluster === true)
+			mapObj.markersCluster.addLayer(marker);
+		else
+			marker.addTo(mapObj.map);
+		
 
 
 	},
+	
 	addPolygon: function(){
 		var polygon = L.polygon([
 			[51.509, -0.08],
 			[51.503, -0.06],
 			[51.51, -0.047]
-		]).addTo(mapObject.map);
-
-		mapObject.addPopUp(polygon);
+		]).addTo(mapObj.map);
+		mapObj.addPopUp(polygon);
 	},
 	addCircle: function(){
 		var circle = L.circle([51.508, -0.11], {
@@ -73,16 +110,16 @@ var mapObject = {
 			fillColor: '#f03',
 			fillOpacity: 0.5,
 			radius: 500
-		}).addTo(mapObject.map);
-		mapObject.addPopUp(circle, true);
+		}).addTo(mapObj.map);
+		mapObj.addPopUp(circle, true);
 	},
 	addPopUp : function(element, open = false){
-		element.bindPopup(mapObject.getPopupSimple(element, "hehe")).openPopup();
+		element.bindPopup(mapObj.getPopupSimple(element, "hehe")).openPopup();
 		if(open === true)
 			element.openPopup();
 	},
 	getPopupSimple : function(data, id){
-		mylog.log("getPopupSimple", data);
+		//mylog.log("getPopupSimple", data);
 		
 		var popupContent = "<div class='popup-marker'>";
 
@@ -172,3 +209,14 @@ var mapObject = {
 		return popupContent;
 	}
 }
+
+var mapCustom = {
+	markers : {
+		//default : assetPath+'/images/markers/citoyen_A.svg'
+		default : '/ph/assets/3e93f017/images/markers/citoyen_A.svg'
+	},
+	clusters : {
+		default : '/ph/assets/3e93f017/images/markers/citoyen_A.svg'
+	}
+}
+	
