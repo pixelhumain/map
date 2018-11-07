@@ -93,7 +93,10 @@ var mapObj = {
 		mapObj.addPopUp(circle, true);
 	},
 	addPopUp : function(marker, elt = null, open = false){
-		marker.bindPopup(mapObj.getPopupSimple(elt)).openPopup();
+		marker.bindPopup(mapObj.getPopupSimple(elt), 
+						{
+							width: "300px"
+						}).openPopup();
 		if(open === true)
 			marker.openPopup();
 	},
@@ -133,27 +136,70 @@ var mapCustom = {
 			// CODE A SUPPRIMER
 
 			data.profilThumbImageUrl = "/ph/assets/753062fa/images/filtres/Loisir.png";
-			var icons = '<i class="fa fa-user text-'+ headerParams[data.typeCommunecter].color +'"></i>';
+			var icons = '<i class="fa fa-user text-'+ headerParams[data.type].color +'"></i>';
 			// END CODE A SUPPRIMER
 			
 
 			//var icons = '<i class="fa fa-user text-'+ headerParams[data.type].color +'"></i>';
 
+			// var popup = "<div class='popup-marker'>";
+			// popup += "<div class='' id='popup"+data.id+"'>";
+			// 	popup += "<div class='main-panel'>"
+			// 		popup += "<div class='left-col'>";
+			// 			popup += "<div class='thumbnail-profil'>"
+			// 				popup += "<img src='" + data.profilThumbImageUrl + "' height=50 width=50 class='popup-info-profil-thumb'>";
+			// 			popup += "</div>"	;					
+			// 			popup += "<div class='ico-type-account'>"+icons+"</div>";
+			// 		popup += "</div>";
+			// 		popup += "<div class='right-col'>";
+			// 			popup += "<div class='info_item pseudo_item_map_list'>" + data['name'] + "</div>";
+			// 		popup += "</div>";
+			// 	 popup += "</div>";
+			// popup += '</div>';
 
-			var popup = "<div class='popup-marker'>";
-			//popup += data.name;
 
-
-			popup += "<div class='item_map_list popup-marker' id='popup"+data.id+"'>";
-				popup += "<div class='main-panel'>"
-					popup += "<div class='left-col'>";
-						popup += "<div class='thumbnail-profil'>"
-							popup += "<img src='" + data.profilThumbImageUrl + "' height=50 width=50 class='popup-info-profil-thumb'>";
-						popup += "</div>"	;					
-						popup += "<div class='ico-type-account'>"+icons+"</div>";
+			var popup = "";
+			popup += "<div class='' id='popup"+data.id+"'>";
+				popup += "<img src='" + data.profilThumbImageUrl + "' height='30' width='30' class='' style='display: inline; vertical-align: middle; border-radius:100%;'>";
+				popup += "<span style='font-size:18px'>" + data['name'] + "</span>";
+				
+				if(typeof data.tags != "undefined" && data.tags != null && data.tags.length > 0){
+					popup += "<div class=''>";
+					var totalTags = 0;
+					$.each(data.tags, function(index, value){ 
+						totalTags++;
+						if(totalTags<4){
+							popup += "<div class='popup-tags'>#" + value + " </div>";
+						}
+					});
 					popup += "</div>";
-					popup += "<div class='right-col'>";
-						popup += "<div class='info_item pseudo_item_map_list'>" + data['name'] + "</div>";
+				}
+
+				if (typeof data.shortDescription != "undefined" && 
+					data.shortDescription != "" && 
+					data.shortDescription != null) {
+					popup += "<div class='popup-div-desc'>"
+						popup += "<div class='popup-desc'>Description</div>"
+						popup += "<div class=''>" + data.shortDescription + "</div>"
+					popup += "</div>";
+				}
+
+				popup += "<div id='pop-contacts' class='popup-section'>"
+					popup += "<div class='popup-subtitle'>Contacts</div>"
+
+					if (typeof data.url != "undefined" && data.url != null){
+						popup += "<div class='popup-info-profil'>";
+							popup += "<i class='fa fa fa-desktop fa_url'></i>";
+							popup += "<a href='"+data.url+"' target='_blank'>"+ data.url + "</a>";
+						popup += "</div>";
+					}
+
+					if (typeof data.email != "undefined" && data.email != null){
+						popup += "<div class='popup-info-profil'>";
+							popup += "<i class='fa fa-envelope fa_email'></i>" + data.email;
+						popup += "</div>";
+					}
+
 					popup += "</div>";
 				popup += "</div>";
 			popup += '</div>';
