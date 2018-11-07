@@ -104,7 +104,7 @@ jQuery(document).ready(function() {
 		success: function(data){
 			console.log("HERE", data);
 
-			mapObj.addElts(data.entities, false);
+			mapObj.addElts(data.entities);
 
 		}
 	});
