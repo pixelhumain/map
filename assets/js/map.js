@@ -110,7 +110,7 @@ var mapCustom = {
 	],
 	markers : {
 		//default : assetPath+'/images/markers/citoyen_A.svg'
-		default : '/ph/assets/3e93f017/images/markers/citoyen_A.svg'
+		default : modules.map.assets+'/images/markers/citoyen_A.svg'
 	},
 	clusters : {
 		default : function(cluster) {
