@@ -6,7 +6,17 @@ var mapObj = {
 	markersCluster : null,
 	markerList : [],
 	activeCluster : true,
+	mapOpt : {
+		dragging : true,
+		center: [0, 0],
+		zoom: 10
+		// maxBounds: bounds,
+		// minZoom: 8,
+		// maxZoom: 16,
+		
+	},
 	init : function(pInit = null){
+
 
 		//Init variable
 		mapObj.container =  ( (pInit != null && typeof pInit.container != "undefined") ? pInit.container : "mapContainer" );
@@ -15,11 +25,12 @@ var mapObj = {
 		mapObj.markersCluster =  null;
 		mapObj.markerList =  [];
 		mapObj.activeCluster =  ( (pInit != null && typeof pInit.activeCluster != "undefined") ? pInit.activeCluster : true );
-
-		var latLon = ( (pInit != null && typeof pInit.latLon != "undefined") ? pInit.latLon : [0, 0] );
-		var zoom = ( (pInit != null && typeof pInit.zoom != "undefined") ? pInit.zoom : 10 );
+		
+		mapObj.mapOpt.dragging =  ( (pInit != null && typeof pInit.dragging != "undefined") ? pInit.dragging : true );
+		mapObj.mapOpt.latLon = ( (pInit != null && typeof pInit.latLon != "undefined") ? pInit.latLon : [0, 0] );
+		mapObj.mapOpt.zoom = ( (pInit != null && typeof pInit.zoom != "undefined") ? pInit.zoom : 10 );
 		//creation de la carte 
-		mapObj.map = L.map(mapObj.container).setView(latLon, zoom);
+		mapObj.map = L.map(mapObj.container, mapObj.mapOpt);
 		// création tpl
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(mapObj.map);
 
@@ -31,7 +42,7 @@ var mapObj = {
 			});
 		}
 	},
-	addElts : function (data){
+	addElts : function (data, addPopUp = false){
 		$.each(data, function(k,v){
 			mapObj.addMarker(v);
 		});
@@ -55,25 +66,38 @@ var mapObj = {
 		if(mapObj.markersCluster != null)
 			mapObj.markersCluster.clearLayers();
 	},
-	addMarker : function(elt){
+	addMarker : function(elt, addPopUp = false, center=true, opt = {}){
+		console.log("addMarker", elt, addPopUp);
 		var myIcon = L.icon({
-			iconUrl: mapCustom.markers.default,
-			iconSize: [38, 95],
+			iconUrl: mapCustom.markers.getMarker(elt),
+			iconSize: [45, 55],
 			iconAnchor: [22, 94],
 			popupAnchor: [-3, -76],
 			shadowUrl: '',
 			shadowSize: [68, 95],
-			shadowAnchor: [22, 94]
+			shadowAnchor: [22, 94],
 		});
+
+		opt.icon = myIcon ;
+
 		var latLon = [ elt.geo.latitude, elt.geo.longitude ] ;
-		var marker = L.marker(latLon, {icon: myIcon});
+		var marker = L.marker(latLon, opt );
 		mapObj.markerList.push(marker);
-		mapObj.addPopUp(marker, elt);
+
+		if(addPopUp === true)
+			mapObj.addPopUp(marker, elt);
+
 		mapObj.arrayBounds.push(latLon);
 		if(mapObj.activeCluster === true)
 			mapObj.markersCluster.addLayer(marker);
-		else
+		else{
 			marker.addTo(mapObj.map);
+		
+			if(center === true)
+				mapObj.map.panTo(latLon);
+		}
+
+		console.log("addMarker end", marker);
 	},
 	addPolygon: function(){
 		var polygon = L.polygon([
@@ -102,21 +126,48 @@ var mapObj = {
 	},
 	getPopupSimple : function(data){
 		return mapCustom.popup.default(data);
+	},
+	setLatLng : function(latLon, marker){
+		mapObj.markerList[marker].setLatLng(latLon);
+		mapObj.map.panTo(latLon);
+	},
+	getLatLng : function(marker){
+		mapObj.markerList[marker].getLatLng();
 	}
+
+
+	
 }
 
 var mapCustom = {
 	css : [
 	],
 	markers : {
-		//default : assetPath+'/images/markers/citoyen_A.svg'
-		default : modules.map.assets+'/images/markers/citoyen_A.svg'
+		default : modules.map.assets+'/images/markers/citizen-marker-default.png',
+		organization : modules.map.assets+'/images/markers/ngo-marker-default.png',
+		project : modules.map.assets+'/images/markers/project-marker-default.png',
+		event : modules.map.assets+'/images/markers/event-marker-default.png',
+		getMarker : function(data){
+
+			if(typeof data != "undefined" && data == null)
+				return mapCustom.markers.default;
+			else if(typeof data.type != "undefined" && data.type == null)
+				return mapCustom.markers.default;
+			else if(jQuery.inArray( data.type, ["organization", "organizations", "NGO"] )  ){
+				return mapCustom.markers.organization;
+			}else if(jQuery.inArray( data.type, ["project", "projects"] )  ){
+				return mapCustom.markers.project;
+			}else if(jQuery.inArray( data.type, ["event", "events"] )  ){
+				return mapCustom.markers.event;
+			}
+			else
+				return mapCustom.markers.default;
+
+		}
 	},
 	clusters : {
 		default : function(cluster) {
-
 			var childCount = cluster.getChildCount();
-
 			var c = ' marker-cluster-';
 			if (childCount < 10) {
 				c += 'small';
@@ -125,7 +176,6 @@ var mapCustom = {
 			} else {
 				c += 'large';
 			}
-
 			return L.divIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
 		}
 	},
@@ -134,30 +184,10 @@ var mapCustom = {
 			mylog.log("mapCustom.popup.default", data);
 			
 			// CODE A SUPPRIMER
-
 			data.profilThumbImageUrl = "/ph/assets/753062fa/images/filtres/Loisir.png";
 			var icons = '<i class="fa fa-user text-'+ headerParams[data.type].color +'"></i>';
 			// END CODE A SUPPRIMER
 			
-
-			//var icons = '<i class="fa fa-user text-'+ headerParams[data.type].color +'"></i>';
-
-			// var popup = "<div class='popup-marker'>";
-			// popup += "<div class='' id='popup"+data.id+"'>";
-			// 	popup += "<div class='main-panel'>"
-			// 		popup += "<div class='left-col'>";
-			// 			popup += "<div class='thumbnail-profil'>"
-			// 				popup += "<img src='" + data.profilThumbImageUrl + "' height=50 width=50 class='popup-info-profil-thumb'>";
-			// 			popup += "</div>"	;					
-			// 			popup += "<div class='ico-type-account'>"+icons+"</div>";
-			// 		popup += "</div>";
-			// 		popup += "<div class='right-col'>";
-			// 			popup += "<div class='info_item pseudo_item_map_list'>" + data['name'] + "</div>";
-			// 		popup += "</div>";
-			// 	 popup += "</div>";
-			// popup += '</div>';
-
-
 			var popup = "";
 			popup += "<div class='' id='popup"+data.id+"'>";
 				popup += "<img src='" + data.profilThumbImageUrl + "' height='30' width='30' class='' style='display: inline; vertical-align: middle; border-radius:100%;'>";

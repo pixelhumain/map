@@ -95,7 +95,16 @@ HtmlHelper::registerCssAndScriptsFiles($cssAnsScriptFilesModule, Yii::app()->get
 
 jQuery(document).ready(function() {
 
-	mapObj.init();
+
+    var paramsMap = {
+        dragging : false,
+        zoom : 8
+    };
+
+	mapObj.init(paramsMap);
+
+
+    
 	$("body").addClass("inSig");
 	$.ajax({
 		type: "POST",
