@@ -16,8 +16,6 @@ var mapObj = {
 		
 	},
 	init : function(pInit = null){
-
-
 		//Init variable
 		mapObj.container =  ( (pInit != null && typeof pInit.container != "undefined") ? pInit.container : "mapContainer" );
 		mapObj.arrayBounds =  [];
@@ -162,7 +160,6 @@ var mapCustom = {
 			}
 			else
 				return mapCustom.markers.default;
-
 		}
 	},
 	clusters : {
