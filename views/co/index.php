@@ -44,8 +44,8 @@ HtmlHelper::registerCssAndScriptsFiles($cssAnsScriptFilesModule, Yii::app()->get
 <div style="">
 	<nav class="header-map index2">
 	    <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header page-scroll pull-left">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header page-scroll pull-left">
             <a href="#" class="lbh">
                 <img src="<?php echo Yii::app()->theme->baseUrl; ?>/assets/img/LOGOS/<?php echo Yii::app()->params["CO2DomainName"]; ?>/logo-min.png" style="padding-right:20px;" class="logo-menutop pull-left" height=30>
             </a>
@@ -91,14 +91,16 @@ HtmlHelper::registerCssAndScriptsFiles($cssAnsScriptFilesModule, Yii::app()->get
 
 </div>
 
-<script type="text/javascript">	
+<script type="text/javascript">
+
+modules.map = <?php echo json_encode( Map::getConfig() ) ?> ;
 
 jQuery(document).ready(function() {
 
 
     var paramsMap = {
-        dragging : false,
-        zoom : 8
+		dragging : false,
+		zoom : 8
     };
 
 	mapObj.init(paramsMap);

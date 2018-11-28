@@ -39,6 +39,9 @@ var mapObj = {
 				}
 			});
 		}
+
+		setTimeout(function(){ mapObj.map.invalidateSize()}, 400);
+
 	},
 	addElts : function (data, addPopUp = false){
 		$.each(data, function(k,v){
@@ -48,11 +51,13 @@ var mapObj = {
 		if(mapObj.arrayBounds.length > 0){
 			mapObj.bounds = L.bounds(mapObj.arrayBounds);
 			var point = mapObj.bounds.getCenter()
-			mapObj.map.panTo([point.x, point.y]);
+			//mapObj.map.panTo([point.x, point.y]);
 		}
 
 		if(mapObj.activeCluster === true)
 			mapObj.map.addLayer(mapObj.markersCluster);
+
+		//mapObj.map.invalidateSize();
 	},
 	clearMap : function(){
 		// Supprime les markers
@@ -179,7 +184,7 @@ var mapCustom = {
 			} else {
 				c += 'large';
 			}
-			return L.divIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
+			return L.divIcon({ html: '<div>' + childCount + '</div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
 		}
 	},
 	popup : {
