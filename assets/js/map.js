@@ -86,7 +86,7 @@ var mapObj = {
 				shadowSize: [68, 95],
 				shadowAnchor: [22, 94],
 			});
-
+			console.log("addMarker myIcon", myIcon);
 			opt.icon = myIcon ;
 
 			var latLon = [ elt.geo.latitude, elt.geo.longitude ] ;
@@ -157,16 +157,16 @@ var mapCustom = {
 		project : modules.map.assets+'/images/markers/project-marker-default.png',
 		event : modules.map.assets+'/images/markers/event-marker-default.png',
 		getMarker : function(data){
-
+			mylog.log("getMarker", jQuery.inArray( data.type, ["project", "projects"] ) , data);
 			if(typeof data != "undefined" && data == null)
 				return mapCustom.markers.default;
 			else if(typeof data.type != "undefined" && data.type == null)
 				return mapCustom.markers.default;
-			else if(jQuery.inArray( data.type, ["organization", "organizations", "NGO"] )  ){
+			else if(jQuery.inArray( data.type, ["organization", "organizations", "NGO"] ) != -1  ){
 				return mapCustom.markers.organization;
-			}else if(jQuery.inArray( data.type, ["project", "projects"] )  ){
+			}else if(jQuery.inArray( data.type, ["project", "projects"] ) != -1  ){
 				return mapCustom.markers.project;
-			}else if(jQuery.inArray( data.type, ["event", "events"] )  ){
+			}else if(jQuery.inArray( data.type, ["event", "events"] ) != -1  ){
 				return mapCustom.markers.event;
 			}
 			else
