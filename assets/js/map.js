@@ -66,35 +66,41 @@ var mapObj = {
 	},
 	addMarker : function(elt, addPopUp = false, center=true, opt = {}){
 		console.log("addMarker", elt, addPopUp);
-		var myIcon = L.icon({
-			iconUrl: mapCustom.markers.getMarker(elt),
-			iconSize: [45, 55],
-			iconAnchor: [22, 94],
-			popupAnchor: [-3, -76],
-			shadowUrl: '',
-			shadowSize: [68, 95],
-			shadowAnchor: [22, 94],
-		});
 
-		opt.icon = myIcon ;
+		if( typeof elt != "undefined" && elt != null &&
+			typeof elt.geo != "undefined" && elt.geo != null && 
+			typeof elt.geo.latitude != "undefined" && elt.geo.latitude != null && 
+			typeof elt.geo.longitude != "undefined" && elt.geo.longitude != null ){
 
-		var latLon = [ elt.geo.latitude, elt.geo.longitude ] ;
-		var marker = L.marker(latLon, opt );
-		mapObj.markerList.push(marker);
+			var myIcon = L.icon({
+				iconUrl: mapCustom.markers.getMarker(elt),
+				iconSize: [45, 55],
+				iconAnchor: [22, 94],
+				popupAnchor: [-3, -76],
+				shadowUrl: '',
+				shadowSize: [68, 95],
+				shadowAnchor: [22, 94],
+			});
 
-		if(addPopUp === true)
-			mapObj.addPopUp(marker, elt);
+			opt.icon = myIcon ;
 
-		mapObj.arrayBounds.push(latLon);
-		if(mapObj.activeCluster === true)
-			mapObj.markersCluster.addLayer(marker);
-		else{
-			marker.addTo(mapObj.map);
-		
-			if(center === true)
-				mapObj.map.panTo(latLon);
+			var latLon = [ elt.geo.latitude, elt.geo.longitude ] ;
+			var marker = L.marker(latLon, opt );
+			mapObj.markerList.push(marker);
+
+			if(addPopUp === true)
+				mapObj.addPopUp(marker, elt);
+
+			mapObj.arrayBounds.push(latLon);
+			if(mapObj.activeCluster === true)
+				mapObj.markersCluster.addLayer(marker);
+			else{
+				marker.addTo(mapObj.map);
+			
+				if(center === true)
+					mapObj.map.panTo(latLon);
+			}
 		}
-
 		console.log("addMarker end", marker);
 	},
 	addPolygon: function(){
