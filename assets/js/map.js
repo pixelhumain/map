@@ -45,7 +45,7 @@ var mapObj = {
 	},
 	addElts : function (data, addPopUp = false){
 		$.each(data, function(k,v){
-			mapObj.addMarker(v);
+			mapObj.addMarker({ elt : v });
 		});
 
 		if(mapObj.arrayBounds.length > 0){
@@ -56,29 +56,27 @@ var mapObj = {
 
 		if(mapObj.activeCluster === true)
 			mapObj.map.addLayer(mapObj.markersCluster);
-
-		//mapObj.map.invalidateSize();
 	},
 	clearMap : function(){
 		// Supprime les markers
 		$.each(mapObj.markerList, function(){
-			console.log("removeLayer", this);
 			mapObj.map.removeLayer(this);
 		});
 		mapObj.markerList = [];
 		if(mapObj.markersCluster != null)
 			mapObj.markersCluster.clearLayers();
 	},
-	addMarker : function(elt, addPopUp = false, center=true, opt = {}){
-		console.log("addMarker", elt, addPopUp);
+	addMarker : function(params){
+	//addMarker : function(elt, params.addPopUp = false, center=true, opt = {}){
+		//console.log("addMarker", elt, params.addPopUp);
 
-		if( typeof elt != "undefined" && elt != null &&
-			typeof elt.geo != "undefined" && elt.geo != null && 
-			typeof elt.geo.latitude != "undefined" && elt.geo.latitude != null && 
-			typeof elt.geo.longitude != "undefined" && elt.geo.longitude != null ){
+		if( typeof params.elt != "undefined" && params.elt != null &&
+			typeof params.elt.geo != "undefined" && params.elt.geo != null && 
+			typeof params.elt.geo.latitude != "undefined" && params.elt.geo.latitude != null && 
+			typeof params.elt.geo.longitude != "undefined" && params.elt.geo.longitude != null ){
 
 			var myIcon = L.icon({
-				iconUrl: mapCustom.markers.getMarker(elt),
+				iconUrl: mapCustom.markers.getMarker(params.elt),
 				iconSize: [45, 55],
 				iconAnchor: [22, 94],
 				popupAnchor: [-3, -76],
@@ -87,26 +85,25 @@ var mapObj = {
 				shadowAnchor: [22, 94],
 			});
 			console.log("addMarker myIcon", myIcon);
-			opt.icon = myIcon ;
+			params.opt.icon = myIcon ;
 
-			var latLon = [ elt.geo.latitude, elt.geo.longitude ] ;
-			var marker = L.marker(latLon, opt );
+			var latLon = [ params.elt.geo.latitude, params.elt.geo.longitude ] ;
+			var marker = L.marker(latLon, params.opt );
 			mapObj.markerList.push(marker);
 
-			if(addPopUp === true)
-				mapObj.addPopUp(marker, elt);
+			if(typeof params.addPopUp != "undefined" && params.addPopUp === true)
+				mapObj.addPopUp(marker, params.elt);
 
 			mapObj.arrayBounds.push(latLon);
 			if(mapObj.activeCluster === true)
 				mapObj.markersCluster.addLayer(marker);
 			else{
 				marker.addTo(mapObj.map);
-			
-				if(center === true)
+				if(typeof params.center != "undefined" && params.center === true)
 					mapObj.map.panTo(latLon);
 			}
 		}
-		console.log("addMarker end", marker);
+		//console.log("addMarker end", marker);
 	},
 	addPolygon: function(){
 		var polygon = L.polygon([

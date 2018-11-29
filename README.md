@@ -42,11 +42,19 @@ Permet de crée un cluster sur la carte
 
 ## Fonction
 
-`init` :
-`addElts` :
-`clearMap` :
-`addMarker` :
-`addPolygon` : 
-`addCircle` : 
-`addPopUp` :
-`activeCluster` :
+### init
+### addElts
+### clearMap
+### addMarker
+`addMarker(params)` : Ajoute un marker sur la map
+##### Parametre
+- `elt` : Objet contenant les informations sur l'icône
+    - `elt.geo.latitude` : la latitude de l'objet  
+    - `elt.geo.longitude` : la longitude de l'objet
+- `addPopUp` : Définie si oui on non on ajoute une popUp à l'icône. Prend deux valeurs `true` ou `false`. Par default `false`.
+- `center` : Définie si oui on non on soite centrer la carte sur l'icône. Prend deux valeurs `true` ou `false`. Par default `false`.
+- `opt` : Objet contenant les informations sur l'icon
+### addPolygon 
+### addCircle 
+### addPopUp
+### activeCluster
