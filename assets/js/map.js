@@ -1,3 +1,4 @@
+
 var mapObj = {
 	container : 'mapContainer',
 	map : null,
@@ -50,8 +51,9 @@ var mapObj = {
 
 		if(mapObj.arrayBounds.length > 0){
 			mapObj.bounds = L.bounds(mapObj.arrayBounds);
-			var point = mapObj.bounds.getCenter()
-			//mapObj.map.panTo([point.x, point.y]);
+			var point = mapObj.bounds.getCenter();
+			console.log("POINT", point);
+			mapObj.map.panTo([point.x, point.y]);
 		}
 
 		if(mapObj.activeCluster === true)
@@ -85,16 +87,25 @@ var mapObj = {
 				shadowAnchor: [22, 94],
 			});
 			console.log("addMarker myIcon", myIcon);
+
+			if(typeof params.opt == "undefined" || params.opt == null)
+				params.opt = {} ;
+
 			params.opt.icon = myIcon ;
 
+			console.log("addMarker myIcon end", myIcon);
 			var latLon = [ params.elt.geo.latitude, params.elt.geo.longitude ] ;
-			var marker = L.marker(latLon, params.opt );
-			mapObj.markerList.push(marker);
 
+
+			var marker = L.marker(latLon, params.opt );
+			console.log("addMarker marker", marker);
+			mapObj.markerList.push(marker);
+			console.log("addMarker mapObj.markerList", mapObj.markerList);
 			if(typeof params.addPopUp != "undefined" && params.addPopUp === true)
 				mapObj.addPopUp(marker, params.elt);
 
 			mapObj.arrayBounds.push(latLon);
+			console.log("addMarker marker2", marker);
 			if(mapObj.activeCluster === true)
 				mapObj.markersCluster.addLayer(marker);
 			else{
@@ -102,8 +113,9 @@ var mapObj = {
 				if(typeof params.center != "undefined" && params.center === true)
 					mapObj.map.panTo(latLon);
 			}
+			
 		}
-		//console.log("addMarker end", marker);
+		console.log("addMarker end", marker);
 	},
 	addPolygon: function(){
 		var polygon = L.polygon([
