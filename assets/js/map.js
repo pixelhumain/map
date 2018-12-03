@@ -46,13 +46,13 @@ var mapObj = {
 	},
 	addElts : function (data, addPopUp = false){
 		$.each(data, function(k,v){
-			mapObj.addMarker({ elt : v });
+			mapObj.addMarker({ elt : v, addPopUp : addPopUp });
 		});
 
 		if(mapObj.arrayBounds.length > 0){
 			mapObj.bounds = L.bounds(mapObj.arrayBounds);
 			var point = mapObj.bounds.getCenter();
-			console.log("POINT", point);
+			//console.log("POINT", point);
 			mapObj.map.panTo([point.x, point.y]);
 		}
 
@@ -69,7 +69,7 @@ var mapObj = {
 			mapObj.markersCluster.clearLayers();
 	},
 	addMarker : function(params){
-	//addMarker : function(elt, params.addPopUp = false, center=true, opt = {}){
+		//params elt, addPopUp, center=true opt = {}{
 		//console.log("addMarker", elt, params.addPopUp);
 
 		if( typeof params.elt != "undefined" && params.elt != null &&
@@ -110,7 +110,7 @@ var mapObj = {
 				mapObj.markersCluster.addLayer(marker);
 			else{
 				marker.addTo(mapObj.map);
-				if(typeof params.center != "undefined" && params.center === true)
+				if(typeof params.center == "undefined" || params.center === true)
 					mapObj.map.panTo(latLon);
 			}
 			
@@ -150,11 +150,14 @@ var mapObj = {
 		mapObj.map.panTo(latLon);
 	},
 	getLatLng : function(marker){
-		mapObj.markerList[marker].getLatLng();
+		return mapObj.markerList[marker].getLatLng();
+	},
+	addFct : function (marker, event, fct){
+		// expmle : event == 'dragend'
+		mapObj.markerList[marker].on('dragend', fct);
+
+
 	}
-
-
-	
 }
 
 var mapCustom = {
@@ -202,11 +205,11 @@ var mapCustom = {
 			
 			// CODE A SUPPRIMER
 			data.profilThumbImageUrl = "/ph/assets/753062fa/images/filtres/Loisir.png";
-			var icons = '<i class="fa fa-user text-'+ headerParams[data.type].color +'"></i>';
+			//var icons = '<i class="fa fa-user text-'+ headerParams[data.type].color +'"></i>';
 			// END CODE A SUPPRIMER
-			
+			var id = (typeof data.id != "undefined") ? data.id :  data._id.$id ;
 			var popup = "";
-			popup += "<div class='' id='popup"+data.id+"'>";
+			popup += "<div class='' id='popup"+id+"'>";
 				popup += "<img src='" + data.profilThumbImageUrl + "' height='30' width='30' class='' style='display: inline; vertical-align: middle; border-radius:100%;'>";
 				popup += "<span style='font-size:18px'>" + data['name'] + "</span>";
 				
@@ -231,24 +234,48 @@ var mapCustom = {
 					popup += "</div>";
 				}
 
-				popup += "<div id='pop-contacts' class='popup-section'>"
-					popup += "<div class='popup-subtitle'>Contacts</div>"
+				if ( 	(typeof data.url != "undefined" && data.url != null) || 
+						(typeof data.email != "undefined" && data.email != null ) ){
 
-					if (typeof data.url != "undefined" && data.url != null){
-						popup += "<div class='popup-info-profil'>";
-							popup += "<i class='fa fa fa-desktop fa_url'></i>";
-							popup += "<a href='"+data.url+"' target='_blank'>"+ data.url + "</a>";
+					popup += "<div id='pop-contacts' class='popup-section'>"
+						popup += "<div class='popup-subtitle'>Contacts</div>"
+
+						if (typeof data.url != "undefined" && data.url != null){
+							popup += "<div class='popup-info-profil'>";
+								popup += "<i class='fa fa fa-desktop fa_url'></i> ";
+								popup += "<a href='"+data.url+"' target='_blank'>"+ data.url + "</a>";
+							popup += "</div>";
+						}
+
+						if (typeof data.email != "undefined" && data.email != null){
+							popup += "<div class='popup-info-profil'>";
+								popup += "<i class='fa fa-envelope fa_email'></i> " + data.email;
+							popup += "</div>";
+						}
+
 						popup += "</div>";
-					}
-
-					if (typeof data.email != "undefined" && data.email != null){
-						popup += "<div class='popup-info-profil'>";
-							popup += "<i class='fa fa-envelope fa_email'></i>" + data.email;
-						popup += "</div>";
-					}
-
 					popup += "</div>";
-				popup += "</div>";
+				}
+			var url = baseUrl+'#page.type.'+data.type+'.id.'+id;
+
+			// if (data.type.substr(0,11) == "poi.interop") {
+			// 	url = data.url;
+			// 	popup += "<a href='"+url+"' target='_blank' class='item_map_list popup-marker' id='popup"+id+"'>";
+			// }else if (typeof TPL_IFRAME != "undefined" && TPL_IFRAME==true){
+			// 	url = "https://www.communecter.org/"+url;
+			// 	popup += "<a href='"+url+"' target='_blank' class='item_map_list popup-marker' id='popup"+id+"'>";
+			// }else if (typeof networkJson != "undefined" && notNull(networkJson) && notNull(networkJson.dataSrc) && notNull(data.source)){
+			// 	popup += "<a href='"+data.source+"' target='_blank' class='item_map_list popup-marker' id='popup"+id+"'>";
+			// }else{
+			// 	onclick = 'urlCtrl.loadByHash("'+url+'");';					
+			// 	popup += "<a href='"+url+"' onclick='"+onclick+"' class='item_map_list popup-marker lbh' id='popup"+id+"'>";
+			// }
+
+
+				popup += "<a href='"+url+"' target='_blank' class='item_map_list popup-marker' id='popup"+id+"'>";
+					popup += '<div class="btn btn-sm btn-more col-md-12">';
+					popup += '<i class="fa fa-hand-pointer-o"></i>trad.knowmore';
+				popup += '</div></a>';
 			popup += '</div>';
 			return popup;
 		}

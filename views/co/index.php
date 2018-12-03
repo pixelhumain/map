@@ -16,6 +16,8 @@ HtmlHelper::registerCssAndScriptsFiles($cssAnsScriptFilesModule, Yii::app()->get
 
 
 ?>
+<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
 <style type="text/css">
 
 
@@ -99,7 +101,6 @@ jQuery(document).ready(function() {
 
 
     var paramsMap = {
-		dragging : false,
 		zoom : 8
     };
 
@@ -115,7 +116,7 @@ jQuery(document).ready(function() {
 		success: function(data){
 			console.log("HERE", data);
 
-			mapObj.addElts(data.entities);
+			mapObj.addElts(data.entities, true);
 
 		}
 	});
