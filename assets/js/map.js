@@ -52,8 +52,11 @@ var mapObj = {
 		if(mapObj.arrayBounds.length > 0){
 			mapObj.bounds = L.bounds(mapObj.arrayBounds);
 			var point = mapObj.bounds.getCenter();
-			//console.log("POINT", point);
-			mapObj.map.panTo([point.x, point.y]);
+			console.log("POINT", point);
+
+			if( !isNaN(point.x) && !isNaN(point.y)){
+				mapObj.map.panTo([point.x, point.y]);
+			}
 		}
 
 		if(mapObj.activeCluster === true)
