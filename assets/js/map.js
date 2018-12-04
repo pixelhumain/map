@@ -92,20 +92,15 @@ var mapObj = {
 				params.opt = {} ;
 
 			params.opt.icon = myIcon ;
-
-			console.log("addMarker myIcon end", myIcon);
 			var latLon = [ params.elt.geo.latitude, params.elt.geo.longitude ] ;
 
 
 			var marker = L.marker(latLon, params.opt );
-			console.log("addMarker marker", marker);
 			mapObj.markerList.push(marker);
-			console.log("addMarker mapObj.markerList", mapObj.markerList);
 			if(typeof params.addPopUp != "undefined" && params.addPopUp === true)
 				mapObj.addPopUp(marker, params.elt);
 
 			mapObj.arrayBounds.push(latLon);
-			console.log("addMarker marker2", marker);
 			if(mapObj.activeCluster === true)
 				mapObj.markersCluster.addLayer(marker);
 			else{
@@ -169,9 +164,12 @@ var mapCustom = {
 		project : modules.map.assets+'/images/markers/project-marker-default.png',
 		event : modules.map.assets+'/images/markers/event-marker-default.png',
 		getMarker : function(data){
-			mylog.log("getMarker", jQuery.inArray( data.type, ["project", "projects"] ) , data);
+			mylog.log("getMarker", jQuery.inArray( data.type, ["project", "projects"] ) , data.profilMarkerImageUrl);
+			
 			if(typeof data != "undefined" && data == null)
 				return mapCustom.markers.default;
+			else if(typeof data.profilMarkerImageUrl !== "undefined" && data.profilMarkerImageUrl != "")
+				return baseUrl + data.profilMarkerImageUrl;
 			else if(typeof data.type != "undefined" && data.type == null)
 				return mapCustom.markers.default;
 			else if(jQuery.inArray( data.type, ["organization", "organizations", "NGO"] ) != -1  ){
@@ -228,17 +226,16 @@ var mapCustom = {
 				if (typeof data.shortDescription != "undefined" && 
 					data.shortDescription != "" && 
 					data.shortDescription != null) {
-					popup += "<div class='popup-div-desc'>"
-						popup += "<div class='popup-desc'>Description</div>"
-						popup += "<div class=''>" + data.shortDescription + "</div>"
+					popup += "<div class='popup-section'>";
+						popup += "<div class='popup-subtitle'>Description</div>";
+						popup += "<div class=''>" + data.shortDescription + "</div>";
 					popup += "</div>";
 				}
 
 				if ( 	(typeof data.url != "undefined" && data.url != null) || 
 						(typeof data.email != "undefined" && data.email != null ) ){
-
-					popup += "<div id='pop-contacts' class='popup-section'>"
-						popup += "<div class='popup-subtitle'>Contacts</div>"
+					popup += "<div id='pop-contacts' class='popup-section'>";
+						popup += "<div class='popup-subtitle'>Contacts</div>";
 
 						if (typeof data.url != "undefined" && data.url != null){
 							popup += "<div class='popup-info-profil'>";
@@ -270,12 +267,12 @@ var mapCustom = {
 			// 	onclick = 'urlCtrl.loadByHash("'+url+'");';					
 			// 	popup += "<a href='"+url+"' onclick='"+onclick+"' class='item_map_list popup-marker lbh' id='popup"+id+"'>";
 			// }
-
-
-				popup += "<a href='"+url+"' target='_blank' class='item_map_list popup-marker' id='popup"+id+"'>";
-					popup += '<div class="btn btn-sm btn-more col-md-12">';
-					popup += '<i class="fa fa-hand-pointer-o"></i>trad.knowmore';
-				popup += '</div></a>';
+				popup += "<div class='popup-section'>";
+					popup += "<a href='"+url+"' target='_blank' class='item_map_list popup-marker' id='popup"+id+"'>";
+						popup += '<div class="btn btn-sm btn-more col-md-12">';
+						popup += '<i class="fa fa-hand-pointer-o"></i>trad.knowmore';
+					popup += '</div></a>';
+				popup += '</div>';
 			popup += '</div>';
 			return popup;
 		}

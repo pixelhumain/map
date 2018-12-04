@@ -57,11 +57,12 @@
     display: inline;
 }
 
-.popup-div-desc{
+.popup-section{
 	margin-top: 15px;
+	font-size: 12px;
 }
 
-.popup-desc {
+.popup-subtitle {
 
     font-weight: 400;
     border-bottom: 1px solid lightgray;
@@ -72,6 +73,23 @@
     float: left;
 
 }
+
+.btn-more {
+
+	border-color: #D2D2D2 !important;
+	margin-top: 5px;
+	margin-bottom: 7px !important;
+	text-align: center;
+	color: #3C3C3C !important;
+	font-weight: 500;
+	border-radius: 10px 10px 10px 10px !important;
+	width: 100%;
+
+}
+.popup-info-profil{
+	margin-left: 10px;	
+}
+
 
 /*.item_map_list.popup-marker {
 
