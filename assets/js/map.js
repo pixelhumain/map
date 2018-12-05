@@ -31,7 +31,27 @@ var mapObj = {
 		//creation de la carte 
 		mapObj.map = L.map(mapObj.container, mapObj.mapOpt);
 		// création tpl
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(mapObj.map);
+		//L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(mapObj.map);
+
+
+		var accessToken = 'pk.eyJ1IjoiY29tbXVuZWN0ZXIiLCJhIjoiY2l6eTIyNTYzMDAxbTJ3bng1YTBsa3d0aCJ9.elyGqovHs-mrji3ttn_Yjw';
+		// Replace 'mapbox.streets' with your map id.
+		var mapboxTiles = L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=' + accessToken, {
+			attribution: '© <a href="https://www.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		});
+
+		mapObj.map.addLayer(mapboxTiles);
+
+		// L.tileLayer('https://api.mapbox.com/styles/v4/{id}/{zoom}/{x}/{y}{@2x}.{format}?access_token={accessToken}', 
+		// 			{ 
+		// 				accessToken: 'pk.eyJ1IjoiY29tbXVuZWN0ZXIiLCJhIjoiY2l6eTIyNTYzMDAxbTJ3bng1YTBsa3d0aCJ9.elyGqovHs-mrji3ttn_Yjw',
+		// 				id : 'mapbox.light',
+		// 				format : 'png',
+		// 				zoom : 0
+
+		// 			}).addTo(mapObj.map);
+		
+
 
 		if(mapObj.activeCluster === true){
 			mapObj.markersCluster = new L.markerClusterGroup({
@@ -186,6 +206,20 @@ var mapCustom = {
 				return mapCustom.markers.default;
 		}
 	},
+	custom : {
+		getThumbProfil : function (data){ 
+
+			var imgProfilPath = assetPath + "/images/thumb/default.png";
+
+			if(typeof data.profilThumbImageUrl !== "undefined" && data.profilThumbImageUrl != "") 
+				imgProfilPath =  baseUrl + data.profilThumbImageUrl;
+			else
+				imgProfilPath = modules.map.assets + "/images/thumb/default_"+data.type+".png";
+
+			return imgProfilPath;
+		}
+		
+	},
 	clusters : {
 		default : function(cluster) {
 			var childCount = cluster.getChildCount();
@@ -205,21 +239,24 @@ var mapCustom = {
 			mylog.log("mapCustom.popup.default", data);
 			
 			// CODE A SUPPRIMER
-			data.profilThumbImageUrl = "/ph/assets/753062fa/images/filtres/Loisir.png";
+			//data.profilThumbImageUrl = "/ph/assets/753062fa/images/filtres/Loisir.png";
 			//var icons = '<i class="fa fa-user text-'+ headerParams[data.type].color +'"></i>';
 			// END CODE A SUPPRIMER
 			var id = (typeof data.id != "undefined") ? data.id :  data._id.$id ;
+
+			var imgProfil = mapCustom.custom.getThumbProfil(data) ;
+
 			var popup = "";
 			popup += "<div class='' id='popup"+id+"'>";
-				popup += "<img src='" + data.profilThumbImageUrl + "' height='30' width='30' class='' style='display: inline; vertical-align: middle; border-radius:100%;'>";
-				popup += "<span style='font-size:18px'>" + data['name'] + "</span>";
+				popup += "<img src='" + imgProfil + "' height='30' width='30' class='' style='display: inline; vertical-align: middle; border-radius:100%;'>";
+				popup += "<span style='margin-left : 5px; font-size:18px'>" + data['name'] + "</span>";
 				
 				if(typeof data.tags != "undefined" && data.tags != null && data.tags.length > 0){
-					popup += "<div class=''>";
+					popup += "<div style='margin-top : 5px;'>";
 					var totalTags = 0;
 					$.each(data.tags, function(index, value){ 
 						totalTags++;
-						if(totalTags<4){
+						if(totalTags<3){
 							popup += "<div class='popup-tags'>#" + value + " </div>";
 						}
 					});
