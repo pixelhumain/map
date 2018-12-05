@@ -31,27 +31,7 @@ var mapObj = {
 		//creation de la carte 
 		mapObj.map = L.map(mapObj.container, mapObj.mapOpt);
 		// création tpl
-		//L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(mapObj.map);
-
-
-		var accessToken = 'pk.eyJ1IjoiY29tbXVuZWN0ZXIiLCJhIjoiY2l6eTIyNTYzMDAxbTJ3bng1YTBsa3d0aCJ9.elyGqovHs-mrji3ttn_Yjw';
-		// Replace 'mapbox.streets' with your map id.
-		var mapboxTiles = L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=' + accessToken, {
-			attribution: '© <a href="https://www.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-		});
-
-		mapObj.map.addLayer(mapboxTiles);
-
-		// L.tileLayer('https://api.mapbox.com/styles/v4/{id}/{zoom}/{x}/{y}{@2x}.{format}?access_token={accessToken}', 
-		// 			{ 
-		// 				accessToken: 'pk.eyJ1IjoiY29tbXVuZWN0ZXIiLCJhIjoiY2l6eTIyNTYzMDAxbTJ3bng1YTBsa3d0aCJ9.elyGqovHs-mrji3ttn_Yjw',
-		// 				id : 'mapbox.light',
-		// 				format : 'png',
-		// 				zoom : 0
-
-		// 			}).addTo(mapObj.map);
-		
-
+		mapObj.setTile();
 
 		if(mapObj.activeCluster === true){
 			mapObj.markersCluster = new L.markerClusterGroup({
@@ -62,6 +42,40 @@ var mapObj = {
 		}
 
 		setTimeout(function(){ mapObj.map.invalidateSize()}, 400);
+
+	},
+	setTile : function(){
+		//Noir et Blanc 
+		L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
+			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>', //'Map tiles by <a href="http://stamen.com">Stamen Design</a>',
+			zIndex:1,
+			minZoom: 3,
+			maxZoom: 17
+		}).addTo(mapObj.map);
+
+		//Noir et Blanc Lite
+		// L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
+		// 	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>', //'Map tiles by <a href="http://stamen.com">Stamen Design</a>',
+		// 	zIndex:1,
+		// 	minZoom: 3,
+		// 	maxZoom: 17
+		// }).addTo(mapObj.map);
+
+		//OSM
+		//L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar'}).addTo(mapObj.map);
+
+		//MAPBOX
+		// var accessToken = 'pk.eyJ1IjoiY29tbXVuZWN0ZXIiLCJhIjoiY2l6eTIyNTYzMDAxbTJ3bng1YTBsa3d0aCJ9.elyGqovHs-mrji3ttn_Yjw';
+		// // Replace 'mapbox.streets' with your map id.
+		// var mapboxTiles = L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=' + accessToken, {
+		// 	attribution: '© <a href="https://www.mapbox.com/feedback/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		// });
+		// mapObj.map.addLayer(mapboxTiles);
+
+
+		//SATELITE
+		//L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {}).addTo(mapObj.map);
+
 
 	},
 	addElts : function (data, addPopUp = false){
@@ -209,7 +223,7 @@ var mapCustom = {
 	custom : {
 		getThumbProfil : function (data){ 
 
-			var imgProfilPath = assetPath + "/images/thumb/default.png";
+			var imgProfilPath = modules.map.assets + "/images/thumb/default.png";
 
 			if(typeof data.profilThumbImageUrl !== "undefined" && data.profilThumbImageUrl != "") 
 				imgProfilPath =  baseUrl + data.profilThumbImageUrl;
