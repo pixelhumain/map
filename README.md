@@ -2,12 +2,16 @@
 
 ## URL
 
-http://maps.stamen.com/#toner/12/37.7706/-122.3782
-https://stamen.com/work/maps-stamen-com/
-http://www.thunderforest.com/maps/
+
+### TileLayer 
+Différents url ou on peut trouver des designs pour les cartes
+- http://maps.stamen.com/#toner/12/37.7706/-122.3782
+- https://stamen.com/work/maps-stamen-com/
+- http://www.thunderforest.com/maps/
 
 
 ## TODO
+- [ ] Pouvoir afficher plusieurs carte en meme temps
 - [ ] Init css et js avec map
     - [x] Faire sur FormInMAP
     - [ ] De maniere générale
@@ -18,6 +22,11 @@ http://www.thunderforest.com/maps/
     - [x] Test différent Tile
     - [ ] Réutileser différent Tile en fct du parametre
     - [ ] Changer de fond a tout moment
+    - [ ] Géré Mapbox quand c'est en prod
+- [ ] En fct des points sur la carte, géré le zoom , plus les points sont éloigner plus on dezoom sur la carte
+- [ ] Afficher les informations sur le coté de la map et non plus en popup
+    - [ ] Rendre ça parametrable
+- [ ] 
 
 ## DOC
 

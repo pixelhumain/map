@@ -89,6 +89,7 @@ var mapObj = {
 			console.log("POINT", point);
 
 			if( !isNaN(point.x) && !isNaN(point.y)){
+				console.log("POINT here", point);
 				mapObj.map.panTo([point.x, point.y]);
 			}
 		}
